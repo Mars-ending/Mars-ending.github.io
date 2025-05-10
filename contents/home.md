@@ -1,8 +1,8 @@
 
 
-[!][weili](https://img.shields.io/badge/MarsEnding-github-blue?logo=github)](https://github.com/Mars-ending)
+[![weili](https://img.shields.io/badge/MarsEnding-github-blue?logo=github)](https://github.com/Mars-ending)
 
-###学而时习之
+### 学而时习之
 Passionate about life with a curiosity-driven mindset. I thrive on exploring diverse interests including tech innovations, creative maker projects, and multicultural experiences. Currently immersing myself in:
 
 3D Model.
