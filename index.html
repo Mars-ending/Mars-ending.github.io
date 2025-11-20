@@ -1,28 +1,94 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人主页 & 简历</title>
+    <title>Wei Li - AI & CV Engineer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* --- 基础重置 --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ============================
+           CSS 变量定义 (主题切换核心)
+           ============================ */
+        :root {
+            /* 默认深色主题 (Dark Mode) */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ff0055;
+            --accent-yellow: #fcee0a;
+            --accent-blue: #0ea5e9;
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            --timeline-line: #334155;
+            --tag-bg: rgba(255, 255, 255, 0.1);
+            --hero-overlay: linear-gradient(to bottom, transparent, #0f172a);
+        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a; /* 深蓝背景作为基底 */
-            color: white;
-            overflow-x: hidden; /* 防止水平滚动条 */
+        /* 浅色主题 (Light Mode) */
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            --timeline-line: #cbd5e1;
+            --tag-bg: rgba(0, 0, 0, 0.05);
+            --hero-overlay: linear-gradient(to bottom, transparent, #f8fafc);
         }
     
-        /* --- 滚动条美化 --- */
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #ff0055; border-radius: 5px; }
+        /* ============================
+           基础样式
+           ============================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
     
-        /* =========================================
-           第一屏：星空粒子 (Hero Section)
-           ========================================= */
+        /* 滚动条 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 4px; }
+    
+        /* ============================
+           工具栏 (日夜切换)
+           ============================ */
+        .toolbar {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+        }
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .theme-toggle:hover { transform: scale(1.1); }
+    
+        /* ============================
+           Hero Section
+           ============================ */
         .hero-section {
             height: 100vh;
             width: 100%;
@@ -32,330 +98,391 @@
             position: relative;
             z-index: 1;
         }
+        
+        /* 底部遮罩，让 Canvas 和 内容平滑过渡 */
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 100px;
+            background: var(--hero-overlay);
+            z-index: -1;
+        }
     
         #canvas-bg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2;
+            background: var(--bg-primary); /* 确保canvas背景跟随主题 */
         }
     
         .glass-card {
             position: relative;
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--card-bg);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            padding: 40px 60px;
+            padding: 40px 50px;
             border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--glass-shadow);
             text-align: center;
-            max-width: 600px;
+            max-width: 650px;
             width: 90%;
             animation: float 6s ease-in-out infinite;
         }
     
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
     
         .avatar {
-            width: 120px;
-            height: 120px;
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
-            border: 4px solid #fcee0a; /* 亮黄边框 */
+            border: 4px solid var(--accent-blue);
             margin-bottom: 20px;
             object-fit: cover;
-            background-color: #1e293b;
+            background-color: var(--bg-secondary);
         }
     
-        h1 { font-size: 3rem; margin-bottom: 10px; font-weight: 800; }
+        h1 { font-size: 3rem; margin-bottom: 10px; font-weight: 800; letter-spacing: -1px; }
         
+        .subtitle { font-size: 1.2rem; color: var(--accent-purple); font-weight: bold; margin-bottom: 15px; }
+    
         .typewriter {
-            font-size: 1.2rem;
-            color: #cbd5e1;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
             margin-bottom: 30px;
             font-family: 'Courier New', Courier, monospace;
             min-height: 1.5em;
         }
-        .cursor { display: inline-block; width: 3px; background-color: #ff0055; animation: blink 1s infinite; }
         
-        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
     
         .btn-main {
             padding: 12px 30px;
             border-radius: 50px;
-            background: #ff0055; /* 活力粉 */
+            background: linear-gradient(45deg, var(--accent-purple), var(--accent-blue));
             color: white;
             text-decoration: none;
             font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
             border: none;
-            cursor: pointer;
         }
-        .btn-main:hover { transform: scale(1.1); background: #ff1f6b; }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4); }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--text-primary);
+            color: var(--text-primary);
+        }
     
-        /* =========================================
-           第二屏：简历区域 (Resume Section)
-           ========================================= */
+        /* ============================
+           Resume Section (Bento Grid)
+           ============================ */
         .resume-section {
             min-height: 100vh;
-            background: #111; /* 纯黑背景突出色彩 */
-            padding: 80px 20px;
-            position: relative;
-        }
-    
-        .container {
-            max-width: 1000px;
+            padding: 60px 20px;
+            max-width: 1200px;
             margin: 0 auto;
         }
     
-        .section-title {
-            font-size: 4rem;
-            font-weight: 900;
-            color: transparent;
-            -webkit-text-stroke: 2px #ffffff;
+        .section-header {
+            margin-bottom: 40px;
             text-align: center;
-            margin-bottom: 50px;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            opacity: 0.3;
         }
+        .section-header h2 { font-size: 2.5rem; font-weight: 900; margin-bottom: 10px; }
+        .section-header p { color: var(--text-secondary); }
     
-        /* --- Grid 布局 --- */
         .bento-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: auto auto;
+            grid-template-columns: repeat(3, 1fr); /* 3列布局 */
             gap: 20px;
+            grid-auto-rows: minmax(100px, auto);
         }
     
-        /* 卡片通用样式 */
+        /* 卡片通用 */
         .box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 20px;
             padding: 30px;
-            transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            backdrop-filter: blur(10px);
         }
+        .box:hover { border-color: var(--accent-purple); }
         
-        .box:hover {
-            transform: translateY(-5px) scale(1.02);
-            z-index: 2;
+        .box h3 { 
+            font-size: 1.4rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; 
+            color: var(--accent-blue);
         }
     
-        .box h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            font-weight: 800;
-        }
-    
-        /* 1. 关于我 - 渐变紫 */
-        .box-about {
-            grid-column: span 2;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-        }
-    
-        /* 2. 统计/数据 - 亮黄 (黑字) */
-        .box-stats {
-            background: #fcee0a;
-            color: black;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-        .stat-number { font-size: 3.5rem; font-weight: 900; line-height: 1; }
-        .stat-label { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; }
-    
-        /* 3. 工作经历 - 深灰带粉色边框 */
-        .box-exp {
+        /* --- 1. 教育背景 (左上) --- */
+        .box-edu {
             grid-column: span 1;
-            grid-row: span 2;
-            background: #1e1e1e;
-            border: 2px solid #333;
-            color: #eee;
+            border-top: 4px solid var(--accent-pink);
+        }
+        .edu-item { margin-bottom: 15px; }
+        .edu-school { font-weight: bold; font-size: 1.1rem; display: block;}
+        .edu-degree { font-size: 0.95rem; color: var(--text-secondary); display: block; margin-top: 4px;}
+    
+        /* --- 2. 工作经历 (中上 - 长条) --- */
+        .box-exp {
+            grid-column: span 2;
+            border-top: 4px solid var(--accent-yellow);
         }
         .timeline-item {
-            border-left: 2px solid #ff0055;
-            padding-left: 20px;
-            margin-bottom: 25px;
             position: relative;
+            padding-left: 25px;
+            margin-bottom: 25px;
+            border-left: 2px solid var(--timeline-line);
         }
         .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -6px; top: 5px;
-            width: 10px; height: 10px;
-            background: #ff0055;
-            border-radius: 50%;
+            content: ''; position: absolute; left: -6px; top: 6px;
+            width: 10px; height: 10px; background: var(--accent-yellow); border-radius: 50%;
         }
-        .time { color: #ff0055; font-size: 0.85rem; font-weight: bold; }
-        .role { font-size: 1.1rem; margin: 5px 0; font-weight: bold; }
-        .company { color: #999; font-size: 0.9rem; }
+        .timeline-date { font-size: 0.85rem; color: var(--accent-yellow); font-weight: bold; }
+        .timeline-role { font-weight: bold; font-size: 1.1rem; margin: 4px 0; }
+        .timeline-comp { font-size: 0.95rem; color: var(--text-secondary); font-style: italic; }
+        .timeline-desc { font-size: 0.9rem; margin-top: 5px; line-height: 1.5; color: var(--text-primary); opacity: 0.9;}
     
-        /* 4. 技能栈 - 渐变粉红 */
+        /* --- 3. 技能栈 (左下) --- */
         .box-skills {
-            grid-column: span 2;
-            background: linear-gradient(135deg, #ff0055, #ff4d4d);
-            color: white;
+            grid-column: span 1;
+            grid-row: span 2; /* 占两行 */
+            border-top: 4px solid var(--accent-purple);
         }
-        .tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .skill-category { margin-bottom: 20px; }
+        .skill-title { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; }
         .tag {
-            background: rgba(0,0,0,0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9rem;
+            background: var(--tag-bg);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            border: 1px solid var(--card-border);
         }
     
-        /* 5. 联系方式 - 电光蓝 */
-        .box-contact {
-            grid-column: span 3;
-            background: linear-gradient(90deg, #0ea5e9, #22d3ee);
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            color: #0f172a;
+        /* --- 4. 项目经历 (右下 - 宽屏) --- */
+        .box-projects {
+            grid-column: span 2;
+            grid-row: span 2;
+            border-top: 4px solid var(--accent-blue);
         }
-        .contact-link {
-            color: #0f172a;
-            text-decoration: none;
-            font-weight: 900;
-            font-size: 1.2rem;
-            border-bottom: 3px solid transparent;
+        
+        .project-category { margin-bottom: 25px; }
+        .project-category h4 { 
+            color: var(--accent-pink); margin-bottom: 10px; font-size: 1.1rem; border-bottom: 1px solid var(--card-border); padding-bottom: 5px;
         }
-        .contact-link:hover { border-bottom: 3px solid #0f172a; }
+        
+        .project-item { margin-bottom: 15px; }
+        .project-name { font-weight: bold; color: var(--text-primary); }
+        .project-tech { font-size: 0.8rem; color: var(--accent-blue); margin-left: 5px; background: var(--tag-bg); padding: 2px 6px; border-radius: 4px; }
+        .project-desc { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; }
     
-        /* 响应式调整 */
-        @media (max-width: 768px) {
+        /* 响应式适配 */
+        @media (max-width: 900px) {
             .bento-grid { grid-template-columns: 1fr; }
-            .box-about, .box-skills, .box-contact, .box-exp { grid-column: span 1; }
-            .section-title { font-size: 3rem; }
+            .box-edu, .box-exp, .box-skills, .box-projects { grid-column: span 1; grid-row: auto; }
+            h1 { font-size: 2.2rem; }
         }
-    
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <!-- 第一屏：星空介绍 -->
-    <section class="hero-section" id="home">
+    <!-- 主题切换按钮 -->
+    <div class="toolbar">
+        <div class="theme-toggle" id="theme-btn" title="切换主题">
+            <i class="fas fa-moon"></i>
+        </div>
+    </div>
+    
+    <!-- Hero Section -->
+    <section class="hero-section">
         <canvas id="canvas-bg"></canvas>
         <div class="glass-card">
-            <img src="ID Picture.png" alt="Avatar" class="avatar">
-            <h1>WEI</h1>
+            <!-- 头像建议替换为你自己的照片 -->
+            <img src="ID Picture.png" alt="Wei Li" class="avatar">
+            
+            <h1>WEI LI</h1>
+            <div class="subtitle">AI / Computer Vision / Scientific Computing</div>
+            
             <div class="typewriter">
-                <span id="text"></span><span class="cursor">&nbsp;</span>
+                <span id="text"></span><span style="border-right: 2px solid var(--accent-pink); animation: blink 1s infinite;">&nbsp;</span>
             </div>
+    
             <div class="btn-group">
-                <a href="#resume" class="btn-main">查看简历 👇</a>
-                <a href="https://github.com" target="_blank" class="btn-main" style="background: #333;">GitHub</a>
+                <a href="#resume" class="btn-main">View Resume</a>
+                <a href="https://www.linkedin.com/in/wei-li-1963cv/" target="_blank" class="btn-main btn-outline">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
+                <a href="mailto:your.email@example.com" class="btn-main btn-outline">
+                    <i class="fas fa-envelope"></i> Email
+                </a>
             </div>
         </div>
     </section>
     
-    <!-- 第二屏：鲜艳简历 -->
+    <!-- Resume Section -->
     <section class="resume-section" id="resume">
-        <div class="container">
-            <div class="section-title">RESUME</div>
+        <div class="section-header">
+            <h2>RESUME</h2>
+            <p>Combining Mathematics, Engineering, and Innovation</p>
+        </div>
+    
+        <div class="bento-grid">
             
-            <div class="bento-grid">
-                <!-- 1. 自我介绍 (宽) -->
-                <div class="box box-about">
-                    <h2>🚀 关于我</h2>
-                    <p style="line-height: 1.6; font-size: 1.1rem;">
-                        我是一名在读法国工程师。热衷于体验新产品。我不只是写代码，我更是在构建数字世界的艺术品。拥有 2 年实习经验，擅长解决复杂问题，并对新技术保持无限好奇。
-                    </p>
+            <!-- 1. Education -->
+            <div class="box box-edu">
+                <h3><i class="fas fa-graduation-cap"></i> Education</h3>
+                <div class="edu-item">
+                    <span class="edu-school">École d’ingénieur</span>
+                    <span class="edu-degree">3rd Year, HTI (High Energy Imaging), Minor AI</span>
                 </div>
-    
-                <!-- 2. 亮点数据 (小方块) -->
-                <div class="box box-stats">
-                    <div class="stat-number">2+</div>
-                    <div class="stat-label">Years Exp</div>
-                    <div class="stat-number" style="margin-top: 15px;">20+</div>
-                    <div class="stat-label">Projects</div>
+                <div class="edu-item">
+                    <span class="edu-school">BSc Applied Mathematics</span>
+                    <span class="edu-degree">Minor AI</span>
                 </div>
+            </div>
     
-                <!-- 3. 工作经历 (长条) -->
-                <div class="box box-exp">
-                    <h2>💼 经历</h2>
-                    
-                    <div class="timeline-item">
-                        <div class="time">2024 - 至今</div>
-                        <div class="role">Ingénieur diplômé</div>
-                        <div class="company">Institut Polytechnique de Paris</div>
-                        <p style="font-size:0.85rem; color:#aaa; margin-top:5px;">3rd Year, HTI (High Energy Imaging), Minor AI. </p>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <div class="time">2023 - 2024</div>
-                        <div class="role">科研助理</div>
-                        <div class="company">北京理工大学数学与统计学院</div>
-                    </div>
-    
-                    <div class="timeline-item">
-                        <div class="time">2019 - 2023</div>
-                        <div class="role">理学学士学位，工学学士学位</div>
-                        <div class="company">北京理工大学</div>
-                        <p style="font-size:0.85rem; color:#aaa; margin-top:5px;">BSc Applied Mathematics, Minor AI. </p>
-                    </div>
-    
-                    
-                </div>
-    
-                <!-- 4. 技能栈 (宽) -->
-                <div class="box box-skills">
-                    <h2>⚡ 技能军火库</h2>
-                    <div class="tags">
-                        <span class="tag">Computer Vision & AI</span>
-                        <span class="tag">Scientific Computing & Numerical Methods / Vue</span>
-                        <span class="tag">Embedded Systems & IoT</span>
-                        <span class="tag">Python</span>
-                        <span class="tag">Databases & Networking</span>
-                        <span class="tag">Git / Docker</span>
-                        <span class="tag">Micro-Expression Recognition</span>
-                        <span class="tag">MongoDB</span>
+            <!-- 2. Experience -->
+            <div class="box box-exp">
+                <h3><i class="fas fa-briefcase"></i> Experience</h3>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">Jul 2025 – Present</div>
+                    <div class="timeline-role">Intern</div>
+                    <div class="timeline-comp">Peking University, Chongqing Big Data Research Institute</div>
+                    <div class="timeline-desc">
+                        Conducted boundary layer fluid simulations and sparse matrix LU decomposition in MATLAB. Optimized design parameters and contributed to research-oriented engineering tasks.
                     </div>
                 </div>
     
-                <!-- 5. 联系方式 (底栏) -->
-                <div class="box box-contact">
-                    <h2>📬 Let's Talk</h2>
-                    <div style="display:flex; gap:20px; flex-wrap: wrap;">
-                        <a href="mailto:louis1963@163.com" class="contact-link">Email Me ↗</a>
-                        <a href="#" class="woaichitudouhhh">WeChat ↗</a>
-                        <a href="#" class="www.linkedin.com/in/
-    wei-li-1963CV">LinkedIn ↗</a>
+                <div class="timeline-item">
+                    <div class="timeline-date">Sep 2023 – Jun 2024</div>
+                    <div class="timeline-role">Research Assistant</div>
+                    <div class="timeline-comp">Beijing Institute of Technology, School of Math & Stats</div>
+                    <div class="timeline-desc">
+                        Assisted faculty in teaching, data analysis, and research experiments.
                     </div>
                 </div>
             </div>
+    
+            <!-- 3. Technical Skills -->
+            <div class="box box-skills">
+                <h3><i class="fas fa-code"></i> Skills</h3>
+                
+                <div class="skill-category">
+                    <div class="skill-title">Languages</div>
+                    <div class="tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">C++</span>
+                        <span class="tag">MATLAB</span>
+                        <span class="tag">R</span>
+                        <span class="tag">Solidity</span>
+                    </div>
+                </div>
+    
+                <div class="skill-category">
+                    <div class="skill-title">Frameworks & Tools</div>
+                    <div class="tags">
+                        <span class="tag">PyTorch</span>
+                        <span class="tag">TensorFlow</span>
+                        <span class="tag">OpenCV</span>
+                        <span class="tag">Docker</span>
+                        <span class="tag">MQTT</span>
+                    </div>
+                </div>
+    
+                <div class="skill-category">
+                    <div class="skill-title">Core Concepts</div>
+                    <div class="tags">
+                        <span class="tag">Computer Vision</span>
+                        <span class="tag">Deep Learning</span>
+                        <span class="tag">GAN / Diffusion</span>
+                        <span class="tag">LSTM</span>
+                        <span class="tag">IoT</span>
+                        <span class="tag">Scientific Computing</span>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- 4. Projects -->
+            <div class="box box-projects">
+                <h3><i class="fas fa-rocket"></i> Key Projects</h3>
+                
+                <div class="project-category">
+                    <h4>🤖 Computer Vision & AI</h4>
+                    <div class="project-item">
+                        <div class="project-name">Micro-Expression Recognition <span class="project-tech">FPD + CNN + ViT</span></div>
+                        <div class="project-desc">Trained seq2seq + rank pooling model for classification & dynamic image construction.</div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-name">GAN Denoising & Diffusion <span class="project-tech">MNIST / CelebA</span></div>
+                        <div class="project-desc">Experiments on image denoising and Diffusion-based image generation.</div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-name">Language-to-Gesture Generation <span class="project-tech">GRU seq2seq</span></div>
+                        <div class="project-desc">Mapping text/voice to BVH gestures; diffusion-based upgrade planned (In Progress).</div>
+                    </div>
+                </div>
+    
+                <div class="project-category">
+                    <h4>📐 Scientific Computing</h4>
+                    <div class="project-item">
+                        <div class="project-name">Boundary Layer & Sparse Matrix LU</div>
+                        <div class="project-desc">Built viscous/non-viscous system; optimized via Augmented Lagrangian; implemented elimination tree.</div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-name">Ocean Buoy Prediction <span class="project-tech">LSTM + VGG16</span></div>
+                        <div class="project-desc">Multi-scale features training enabled accurate prediction for buoys (R² > 0.9).</div>
+                    </div>
+                </div>
+    
+                <div class="project-category">
+                    <h4>📡 Embedded & IoT</h4>
+                    <div class="project-item">
+                        <div class="project-name">Smart Lock System <span class="project-tech">Raspberry Pi + MTCNN</span></div>
+                        <div class="project-desc">End-to-end face recognition unlocking system.</div>
+                    </div>
+                    <div class="project-item">
+                        <div class="project-name">Smart Trash Bin <span class="project-tech">Docker + MQTT</span></div>
+                        <div class="project-desc">Radar sensor integration with interactive web dashboard visualization.</div>
+                    </div>
+                </div>
+            </div>
+    
         </div>
     </section>
     
     <script>
-        // --- 1. 平滑滚动脚本 ---
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
+        // --- 1. 日夜模式切换 ---
+        const themeBtn = document.getElementById('theme-btn');
+        const html = document.documentElement;
+        const icon = themeBtn.querySelector('i');
+    
+        // 检查本地存储
+        if (localStorage.getItem('theme') === 'light') {
+            html.setAttribute('data-theme', 'light');
+            icon.className = 'fas fa-sun';
+        }
+    
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'dark');
+            }
         });
     
         // --- 2. 打字机效果 ---
         const textElement = document.getElementById('text');
-        const phrases = ["创造数字未来", "计算机视觉工程师", "设计与代码的结合", "Hello World!"];
+        const phrases = ["Applied Mathematics", "Deep Learning Researcher", "Embedded Systems Developer"];
         let phraseIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
@@ -374,7 +501,7 @@
     
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true;
-                typeSpeed = 2000; 
+                typeSpeed = 2000;
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 phraseIndex = (phraseIndex + 1) % phrases.length;
@@ -384,7 +511,7 @@
         }
         document.addEventListener('DOMContentLoaded', type);
     
-        // --- 3. 粒子背景脚本 (仅在 Hero Section 生效) ---
+        // --- 3. 背景粒子 (自动适配颜色) ---
         const canvas = document.getElementById('canvas-bg');
         const ctx = canvas.getContext('2d');
         let particlesArray;
@@ -399,15 +526,16 @@
         });
     
         class Particle {
-            constructor(x, y, directionX, directionY, size, color) {
+            constructor(x, y, directionX, directionY, size) {
                 this.x = x; this.y = y;
                 this.directionX = directionX; this.directionY = directionY;
-                this.size = size; this.color = color;
+                this.size = size;
             }
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                ctx.fillStyle = '#8b5cf6';
+                // 粒子颜色固定为淡紫色，在深/浅背景下都好看
+                ctx.fillStyle = 'rgba(139, 92, 246, 0.7)'; 
                 ctx.fill();
             }
             update() {
@@ -421,14 +549,14 @@
     
         function init() {
             particlesArray = [];
-            let numberOfParticles = (canvas.height * canvas.width) / 9000;
+            let numberOfParticles = (canvas.height * canvas.width) / 12000;
             for (let i = 0; i < numberOfParticles; i++) {
                 let size = (Math.random() * 2) + 1;
                 let x = (Math.random() * innerWidth);
                 let y = (Math.random() * innerHeight);
                 let directionX = (Math.random() * 1) - 0.5;
                 let directionY = (Math.random() * 1) - 0.5;
-                particlesArray.push(new Particle(x, y, directionX, directionY, size, '#8b5cf6'));
+                particlesArray.push(new Particle(x, y, directionX, directionY, size));
             }
         }
     
@@ -437,7 +565,8 @@
                 for (let b = a; b < particlesArray.length; b++) {
                     let distance = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
                     if (distance < (canvas.width/7) * (canvas.height/7)) {
-                        ctx.strokeStyle = 'rgba(140, 100, 255,' + (1 - distance/20000) + ')';
+                        // 连线颜色
+                        ctx.strokeStyle = 'rgba(139, 92, 246,' + (1 - distance/20000) + ')';
                         ctx.lineWidth = 1;
                         ctx.beginPath();
                         ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
