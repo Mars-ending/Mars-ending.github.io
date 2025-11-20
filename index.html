@@ -3,198 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人主页</title>
+    <title>我的个人主页 & 简历</title>
     <style>
-        /* --- 基础样式 --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* --- 基础重置 --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0f172a; /* 深蓝背景 */
+            background-color: #0f172a; /* 深蓝背景作为基底 */
             color: white;
+            overflow-x: hidden; /* 防止水平滚动条 */
+        }
+    
+        /* --- 滚动条美化 --- */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #ff0055; border-radius: 5px; }
+    
+        /* =========================================
+           第一屏：星空粒子 (Hero Section)
+           ========================================= */
+        .hero-section {
             height: 100vh;
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
+            z-index: 1;
         }
     
-        /* --- 背景画布 --- */
         #canvas-bg {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            z-index: -1;
         }
     
-        /* --- 中间卡片 (玻璃拟态) --- */
-        .card {
+        .glass-card {
             position: relative;
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px); /* 磨砂效果 */
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 40px 60px;
-            border-radius: 20px;
+            border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             text-align: center;
-            max-width: 500px;
+            max-width: 600px;
             width: 90%;
-            transition: transform 0.3s ease;
+            animation: float 6s ease-in-out infinite;
         }
     
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255, 255, 255, 0.3);
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
         }
     
-        /* --- 头像区域 --- */
         .avatar {
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            border: 3px solid rgba(255, 255, 255, 0.2);
+            border: 4px solid #fcee0a; /* 亮黄边框 */
             margin-bottom: 20px;
             object-fit: cover;
             background-color: #1e293b;
-            /* 这里可以用 img 标签替换背景色 */
         }
     
-        /* --- 文本样式 --- */
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-        }
-    
+        h1 { font-size: 3rem; margin-bottom: 10px; font-weight: 800; }
+        
         .typewriter {
             font-size: 1.2rem;
-            color: #94a3b8;
+            color: #cbd5e1;
             margin-bottom: 30px;
-            min-height: 1.6em; /* 防止文字跳动 */
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 1.5em;
         }
+        .cursor { display: inline-block; width: 3px; background-color: #ff0055; animation: blink 1s infinite; }
+        
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
     
-        .cursor {
-            display: inline-block;
-            width: 2px;
-            background-color: #38bdf8;
-            animation: blink 1s infinite;
-        }
-    
-        /* --- 按钮区域 --- */
-        .links {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-    
-        .btn {
-            text-decoration: none;
-            padding: 10px 25px;
-            border-radius: 30px;
-            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+        .btn-main {
+            padding: 12px 30px;
+            border-radius: 50px;
+            background: #ff0055; /* 活力粉 */
             color: white;
+            text-decoration: none;
             font-weight: bold;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+            transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-main:hover { transform: scale(1.1); background: #ff1f6b; }
+    
+        /* =========================================
+           第二屏：简历区域 (Resume Section)
+           ========================================= */
+        .resume-section {
+            min-height: 100vh;
+            background: #111; /* 纯黑背景突出色彩 */
+            padding: 80px 20px;
+            position: relative;
+        }
+    
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+    
+        .section-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: transparent;
+            -webkit-text-stroke: 2px #ffffff;
+            text-align: center;
+            margin-bottom: 50px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            opacity: 0.3;
+        }
+    
+        /* --- Grid 布局 --- */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto auto;
+            gap: 20px;
+        }
+    
+        /* 卡片通用样式 */
+        .box {
+            border-radius: 20px;
+            padding: 30px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-        }
-    
-        .btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            display: flex;
+            flex-direction: column;
         }
         
-        .btn-secondary {
-            background: transparent;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.1);
+        .box:hover {
+            transform: translateY(-5px) scale(1.02);
+            z-index: 2;
         }
     
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        .box h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            font-weight: 800;
         }
+    
+        /* 1. 关于我 - 渐变紫 */
+        .box-about {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+    
+        /* 2. 统计/数据 - 亮黄 (黑字) */
+        .box-stats {
+            background: #fcee0a;
+            color: black;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .stat-number { font-size: 3.5rem; font-weight: 900; line-height: 1; }
+        .stat-label { font-size: 0.9rem; font-weight: bold; text-transform: uppercase; }
+    
+        /* 3. 工作经历 - 深灰带粉色边框 */
+        .box-exp {
+            grid-column: span 1;
+            grid-row: span 2;
+            background: #1e1e1e;
+            border: 2px solid #333;
+            color: #eee;
+        }
+        .timeline-item {
+            border-left: 2px solid #ff0055;
+            padding-left: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px; top: 5px;
+            width: 10px; height: 10px;
+            background: #ff0055;
+            border-radius: 50%;
+        }
+        .time { color: #ff0055; font-size: 0.85rem; font-weight: bold; }
+        .role { font-size: 1.1rem; margin: 5px 0; font-weight: bold; }
+        .company { color: #999; font-size: 0.9rem; }
+    
+        /* 4. 技能栈 - 渐变粉红 */
+        .box-skills {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #ff0055, #ff4d4d);
+            color: white;
+        }
+        .tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .tag {
+            background: rgba(0,0,0,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+    
+        /* 5. 联系方式 - 电光蓝 */
+        .box-contact {
+            grid-column: span 3;
+            background: linear-gradient(90deg, #0ea5e9, #22d3ee);
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            color: #0f172a;
+        }
+        .contact-link {
+            color: #0f172a;
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 1.2rem;
+            border-bottom: 3px solid transparent;
+        }
+        .contact-link:hover { border-bottom: 3px solid #0f172a; }
+    
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .box-about, .box-skills, .box-contact, .box-exp { grid-column: span 1; }
+            .section-title { font-size: 3rem; }
+        }
+    
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <!-- 背景画布 -->
-    <canvas id="canvas-bg"></canvas>
-    
-    <!-- 个人资料卡片 -->
-    <div class="card">
-        <!-- 在这里把 src 换成你的头像链接，例如 GitHub 头像 -->
-        <img src="ID Picture.png" alt="Avatar" class="avatar">
-        
-        <!-- 名字 -->
-        <h1>WEI</h1>
-        
-        <!-- 打字机特效文字 -->
-        <div class="typewriter">
-            <span id="text"></span><span class="cursor">&nbsp;</span>
+    <!-- 第一屏：星空介绍 -->
+    <section class="hero-section" id="home">
+        <canvas id="canvas-bg"></canvas>
+        <div class="glass-card">
+            <img src="ID Picture.png" alt="Avatar" class="avatar">
+            <h1>WEI</h1>
+            <div class="typewriter">
+                <span id="text"></span><span class="cursor">&nbsp;</span>
+            </div>
+            <div class="btn-group">
+                <a href="#resume" class="btn-main">查看简历 👇</a>
+                <a href="https://github.com" target="_blank" class="btn-main" style="background: #333;">GitHub</a>
+            </div>
         </div>
+    </section>
     
-        <!-- 链接按钮 -->
-        <div class="links">
-            <a href="https://github.com/mars-ending" class="btn" target="_blank">GitHub</a>
-            <a href="mailto:your@email.com" class="btn btn-secondary">Email Me</a>
+    <!-- 第二屏：鲜艳简历 -->
+    <section class="resume-section" id="resume">
+        <div class="container">
+            <div class="section-title">RESUME</div>
+            
+            <div class="bento-grid">
+                <!-- 1. 自我介绍 (宽) -->
+                <div class="box box-about">
+                    <h2>🚀 关于我</h2>
+                    <p style="line-height: 1.6; font-size: 1.1rem;">
+                        我是一名在读法国工程师。热衷于体验新产品。我不只是写代码，我更是在构建数字世界的艺术品。拥有 2 年实习经验，擅长解决复杂问题，并对新技术保持无限好奇。
+                    </p>
+                </div>
+    
+                <!-- 2. 亮点数据 (小方块) -->
+                <div class="box box-stats">
+                    <div class="stat-number">2+</div>
+                    <div class="stat-label">Years Exp</div>
+                    <div class="stat-number" style="margin-top: 15px;">20+</div>
+                    <div class="stat-label">Projects</div>
+                </div>
+    
+                <!-- 3. 工作经历 (长条) -->
+                <div class="box box-exp">
+                    <h2>💼 经历</h2>
+                    
+                    <div class="timeline-item">
+                        <div class="time">2024 - 至今</div>
+                        <div class="role">Ingénieur diplômé</div>
+                        <div class="company">Institut Polytechnique de Paris</div>
+                        <p style="font-size:0.85rem; color:#aaa; margin-top:5px;">3rd Year, HTI (High Energy Imaging), Minor AI. </p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="time">2023 - 2024</div>
+                        <div class="role">科研助理</div>
+                        <div class="company">北京理工大学数学与统计学院</div>
+                    </div>
+    
+                    <div class="timeline-item">
+                        <div class="time">2019 - 2023</div>
+                        <div class="role">理学学士学位，工学学士学位</div>
+                        <div class="company">北京理工大学</div>
+                        <p style="font-size:0.85rem; color:#aaa; margin-top:5px;">BSc Applied Mathematics, Minor AI. </p>
+                    </div>
+    
+                    
+                </div>
+    
+                <!-- 4. 技能栈 (宽) -->
+                <div class="box box-skills">
+                    <h2>⚡ 技能军火库</h2>
+                    <div class="tags">
+                        <span class="tag">Computer Vision & AI</span>
+                        <span class="tag">Scientific Computing & Numerical Methods / Vue</span>
+                        <span class="tag">Embedded Systems & IoT</span>
+                        <span class="tag">Python</span>
+                        <span class="tag">Databases & Networking</span>
+                        <span class="tag">Git / Docker</span>
+                        <span class="tag">Micro-Expression Recognition</span>
+                        <span class="tag">MongoDB</span>
+                    </div>
+                </div>
+    
+                <!-- 5. 联系方式 (底栏) -->
+                <div class="box box-contact">
+                    <h2>📬 Let's Talk</h2>
+                    <div style="display:flex; gap:20px; flex-wrap: wrap;">
+                        <a href="mailto:louis1963@163.com" class="contact-link">Email Me ↗</a>
+                        <a href="#" class="woaichitudouhhh">WeChat ↗</a>
+                        <a href="#" class="www.linkedin.com/in/
+    wei-li-1963CV">LinkedIn ↗</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
     
     <script>
-        // --- 1. 打字机效果脚本 ---
+        // --- 1. 平滑滚动脚本 ---
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    
+        // --- 2. 打字机效果 ---
         const textElement = document.getElementById('text');
-        const phrases = ["我是开发者", "热爱开源技术", "喜欢探索未知", "欢迎来到我的主页"];
+        const phrases = ["创造数字未来", "计算机视觉工程师", "设计与代码的结合", "Hello World!"];
         let phraseIndex = 0;
         let charIndex = 0;
         let isDeleting = false;
-        let typeSpeed = 100;
     
         function type() {
             const currentPhrase = phrases[phraseIndex];
-            
             if (isDeleting) {
                 textElement.textContent = currentPhrase.substring(0, charIndex - 1);
                 charIndex--;
-                typeSpeed = 50; // 删除速度快一点
             } else {
                 textElement.textContent = currentPhrase.substring(0, charIndex + 1);
                 charIndex++;
-                typeSpeed = 150; // 打字速度
             }
+    
+            let typeSpeed = isDeleting ? 50 : 100;
     
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true;
-                typeSpeed = 2000; // 打完一句话停顿一下
+                typeSpeed = 2000; 
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 phraseIndex = (phraseIndex + 1) % phrases.length;
-                typeSpeed = 500; // 删完停顿一下
+                typeSpeed = 500;
             }
-    
             setTimeout(type, typeSpeed);
         }
         document.addEventListener('DOMContentLoaded', type);
-
-
-        // --- 2. 粒子连线背景脚本 ---
+    
+        // --- 3. 粒子背景脚本 (仅在 Hero Section 生效) ---
         const canvas = document.getElementById('canvas-bg');
         const ctx = canvas.getContext('2d');
         let particlesArray;
     
-        // 设置画布大小
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
     
@@ -204,98 +398,46 @@
             init();
         });
     
-        // 鼠标位置
-        const mouse = {
-            x: null,
-            y: null,
-            radius: 150 // 连线半径
-        }
-    
-        window.addEventListener('mousemove', (event) => {
-            mouse.x = event.x;
-            mouse.y = event.y;
-        });
-        
-        window.addEventListener('mouseout', () => {
-             mouse.x = undefined;
-             mouse.y = undefined;
-        });
-    
-        // 粒子类
         class Particle {
             constructor(x, y, directionX, directionY, size, color) {
-                this.x = x;
-                this.y = y;
-                this.directionX = directionX;
-                this.directionY = directionY;
-                this.size = size;
-                this.color = color;
+                this.x = x; this.y = y;
+                this.directionX = directionX; this.directionY = directionY;
+                this.size = size; this.color = color;
             }
-            // 绘制
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                ctx.fillStyle = '#8b5cf6'; // 粒子颜色
+                ctx.fillStyle = '#8b5cf6';
                 ctx.fill();
             }
-            // 更新位置
             update() {
-                if (this.x > canvas.width || this.x < 0) {
-                    this.directionX = -this.directionX;
-                }
-                if (this.y > canvas.height || this.y < 0) {
-                    this.directionY = -this.directionY;
-                }
+                if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
                 this.x += this.directionX;
                 this.y += this.directionY;
-    
-                // 鼠标互动：如果鼠标靠近，粒子会稍微变大
-                let dx = mouse.x - this.x;
-                let dy = mouse.y - this.y;
-                let distance = Math.sqrt(dx*dx + dy*dy);
-                if (distance < mouse.radius + this.size){
-                    if (mouse.x < this.x && this.x < canvas.width - this.size * 10) {
-                        this.x += 2;
-                    }
-                    if (mouse.x > this.x && this.x > this.size * 10) {
-                        this.x -= 2;
-                    }
-                    if (mouse.y < this.y && this.y < canvas.height - this.size * 10) {
-                        this.y += 2;
-                    }
-                    if (mouse.y > this.y && this.y > this.size * 10) {
-                        this.y -= 2;
-                    }
-                }
                 this.draw();
             }
         }
     
-        // 初始化粒子
         function init() {
             particlesArray = [];
             let numberOfParticles = (canvas.height * canvas.width) / 9000;
             for (let i = 0; i < numberOfParticles; i++) {
-                let size = (Math.random() * 3) + 1;
-                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-                let directionX = (Math.random() * 2) - 1;
-                let directionY = (Math.random() * 2) - 1;
-                let color = '#8b5cf6';
-                particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                let size = (Math.random() * 2) + 1;
+                let x = (Math.random() * innerWidth);
+                let y = (Math.random() * innerHeight);
+                let directionX = (Math.random() * 1) - 0.5;
+                let directionY = (Math.random() * 1) - 0.5;
+                particlesArray.push(new Particle(x, y, directionX, directionY, size, '#8b5cf6'));
             }
         }
     
-        // 连线逻辑
         function connect() {
-            let opacityValue = 1;
             for (let a = 0; a < particlesArray.length; a++) {
                 for (let b = a; b < particlesArray.length; b++) {
-                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
-                    + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
                     if (distance < (canvas.width/7) * (canvas.height/7)) {
-                        opacityValue = 1 - (distance/20000);
-                        ctx.strokeStyle = 'rgba(140, 100, 255,' + opacityValue + ')'; // 连线颜色
+                        ctx.strokeStyle = 'rgba(140, 100, 255,' + (1 - distance/20000) + ')';
                         ctx.lineWidth = 1;
                         ctx.beginPath();
                         ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -306,13 +448,10 @@
             }
         }
     
-        // 动画循环
         function animate() {
             requestAnimationFrame(animate);
             ctx.clearRect(0, 0, innerWidth, innerHeight);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-            }
+            for (let i = 0; i < particlesArray.length; i++) particlesArray[i].update();
             connect();
         }
     
