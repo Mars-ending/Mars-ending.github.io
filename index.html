@@ -3,627 +3,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PORTFOLIO | MATH & AI ENGINEER</title>
+    <title>NEXUS | MATH & AI ARCHITECT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syncopate:wght@700&display=swap" rel="stylesheet">
+    
     <style>
-        /* --- 核心变量系统 (Day Mode 默认) --- */
+        /* --- 核心变量系统 --- */
         :root {
-            --bg-color: #ffffff;             /* 极亮白 */
-            --text-color: #000000;           /* 纯黑 */
-            --box-bg: #f4f4f4;               /* 浅灰装饰 */
-            --accent-color: #0044ff;         /* 克莱因蓝 - 极具数学感的亮色 */
-            --secondary-color: #ff3333;      /* 警示红 - 用于高亮 */
-            --border: 3px solid #000000;     /* 粗框 - 粗野主义核心 */
+            /* 更加大胆的酸性/赛博配色 */
+            --bg-color: #080808;             /* 接近纯黑的深灰 */
+            --surface-color: #1a1a1a;        /* 卡片背景 */
+            --text-primary: #f0f0f0;         /* 灰白文字 */
             
-            --font-mono: 'Courier New', Courier, monospace; /* 代码感 */
-            --font-display: 'Impact', 'Arial Black', sans-serif; /* 冲击力 */
+            --acid-green: #ccff00;           /* 核心酸性绿 */
+            --neon-pink: #ff00ff;            /* 镭射粉 */
+            --cyber-blue: #00ffff;           /* 赛博蓝 */
+            
+            --border-width: 2px;
+            --border-color: #333;
+            
+            --font-display: 'Syncopate', sans-serif;  /* 极宽的标题字体 */
+            --font-body: 'Space Grotesk', sans-serif; /* 正文 */
+            --font-code: 'Space Mono', monospace;     /* 代码 */
+            
+            --grid-gap: 20px;
         }
 
-        /* --- 夜间模式变量 (Dark Mode) --- */
-        body.dark-mode {
-            --bg-color: #050505;
-            --text-color: #e0e0e0;
-            --box-bg: #111111;
-            --accent-color: #ccff00;         /* 酸性绿 - 赛博朋克 */
-            --secondary-color: #bd00ff;      /* 霓虹紫 */
-            --border: 2px solid #e0e0e0;
-        }
-
-        /* --- 全局重置 --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; transition: background 0.3s, color 0.3s, border-color 0.3s; }
+        /* --- 全局重置 & 基础样式 --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: none; /* 隐藏默认鼠标，使用自定义 */ }
         
         body {
             background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-mono);
-            line-height: 1.5;
+            color: var(--text-primary);
+            font-family: var(--font-body);
             overflow-x: hidden;
+            font-size: 16px;
+            line-height: 1.6;
         }
 
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
 
-        /* --- 语言切换逻辑 --- */
-        /* 默认显示英文，隐藏中文 */
+        /* --- 自定义光标 (Custom Cursor) --- */
+        .cursor-dot, .cursor-outline {
+            position: fixed;
+            top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot {
+            width: 8px; height: 8px;
+            background-color: var(--acid-green);
+        }
+        .cursor-outline {
+            width: 40px; height: 40px;
+            border: 1px solid var(--acid-green);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        /* 鼠标悬停时的状态 */
+        body.hovering .cursor-outline {
+            width: 80px; height: 80px;
+            background-color: rgba(204, 255, 0, 0.1);
+            border-color: var(--neon-pink);
+            mix-blend-mode: difference;
+        }
+
+        /* --- 语言控制 --- */
         .lang-zh { display: none; }
-        
-        /* 当 body 有 .zh-mode 类时，隐藏英文，显示中文 */
         body.zh-mode .lang-en { display: none; }
         body.zh-mode .lang-zh { display: block; }
-        
-        /* 对于行内元素，我们需要用 inline-block 或 inline */
-        span.lang-zh { display: none; }
-        body.zh-mode span.lang-en { display: none; }
         body.zh-mode span.lang-zh { display: inline; }
 
-        /* --- 控制台 (右上角按钮) --- */
-        .control-panel {
+        /* --- 噪点纹理叠加 (Noise Overlay) --- */
+        .noise-overlay {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.05"/%3E%3C/svg%3E');
+            pointer-events: none;
+            z-index: 900;
+        }
+
+        /* --- 顶部导航 --- */
+        nav {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 40px;
             display: flex;
-            gap: 10px;
-        }
-
-        .btn-toggle {
-            background: var(--bg-color);
-            color: var(--text-color);
-            border: var(--border);
-            padding: 10px 15px;
-            font-family: var(--font-display);
-            font-size: 1rem;
-            cursor: pointer;
-            box-shadow: 4px 4px 0 var(--text-color); /* 硬阴影 */
-            transition: transform 0.1s;
-        }
-
-        .btn-toggle:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 var(--text-color);
-        }
-
-        .btn-toggle:hover {
-            background: var(--accent-color);
-            color: #fff;
-        }
-
-        /* --- 排版与 Glitch 效果 --- */
-        h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: -1px; }
-
-        .glitch-text {
-            position: relative;
-            color: var(--accent-color);
-            font-size: clamp(3rem, 8vw, 6rem); /* 响应式字体 */
-            line-height: 0.9;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(8, 8, 8, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
         }
         
-        /* Day Mode 下 Glitch 不做复杂的剪切动画，保持干净有力，只做颜色偏移 */
-        .glitch-text:hover {
-            text-shadow: 3px 3px 0 var(--secondary-color);
+        .logo {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--acid-green);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
         }
 
-        /* Dark Mode 下启用复杂的赛博故障效果 */
-        body.dark-mode .glitch-text::before,
-        body.dark-mode .glitch-text::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-color);
+        .controls button {
+            background: transparent;
+            border: 1px solid var(--text-primary);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            font-family: var(--font-code);
+            margin-left: 10px;
+            transition: 0.3s;
+            text-transform: uppercase;
         }
-        body.dark-mode .glitch-text::before {
-            left: 2px; text-shadow: -1px 0 red; clip: rect(24px, 550px, 90px, 0);
-            animation: glitch-anim-2 3s infinite linear alternate-reverse;
-        }
-        body.dark-mode .glitch-text::after {
-            left: -2px; text-shadow: -1px 0 blue; clip: rect(85px, 550px, 140px, 0);
-            animation: glitch-anim 2.5s infinite linear alternate-reverse;
-        }
-        @keyframes glitch-anim { 0% { clip: rect(14px, 9999px, 122px, 0); } 100% { clip: rect(45px, 9999px, 160px, 0); } }
-        @keyframes glitch-anim-2 { 0% { clip: rect(100px, 9999px, 10px, 0); } 100% { clip: rect(15px, 9999px, 90px, 0); } }
-
-        /* --- 布局 --- */
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-
-        .section-title {
-            font-size: 3rem;
-            background: var(--accent-color);
-            color: #fff;
-            padding: 0.5rem 1rem;
-            display: inline-block;
-            margin-bottom: 3rem;
-            transform: rotate(-2deg); /* 微微倾斜增加艺术感 */
-            border: var(--border);
+        .controls button:hover {
+            background: var(--acid-green);
+            color: #000;
+            border-color: var(--acid-green);
+            box-shadow: 0 0 15px var(--acid-green);
         }
 
-        /* --- Header --- */
-        header {
-            min-height: 90vh;
+        /* --- Hero Section (更加夸张的排版) --- */
+        .hero {
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: flex-start;
-            padding-top: 4rem;
+            padding: 0 5vw;
+            position: relative;
         }
 
-        .role-tag {
-            border: var(--border);
-            padding: 5px 15px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            display: inline-block;
-            margin-bottom: 1.5rem;
-            background: var(--box-bg);
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 10vw, 8rem);
+            line-height: 0.85;
+            text-transform: uppercase;
+            color: transparent;
+            -webkit-text-stroke: 2px var(--text-primary);
+            position: relative;
+            z-index: 1;
         }
-
-        .sub-intro {
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin-top: 2rem;
-            border-left: 5px solid var(--accent-color);
-            padding-left: 1.5rem;
-            font-weight: bold;
-        }
-
-        /* --- 技能矩阵 --- */
-        .tech-stack {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 6rem;
-        }
-
-        .tech-box {
-            border: var(--border);
-            padding: 2rem;
-            background: var(--box-bg);
-            box-shadow: 8px 8px 0 var(--text-color); /* 粗野主义硬阴影 */
-            transition: 0.3s;
-        }
-
-        .tech-box:hover {
-            transform: translate(-4px, -4px);
-            box-shadow: 12px 12px 0 var(--accent-color);
-        }
-
-        .tech-box h3 { color: var(--accent-color); margin-bottom: 1rem; font-size: 1.5rem; }
-        .tech-box li { margin-bottom: 0.5rem; }
-        .tech-box ul li::before { content: "■ "; color: var(--text-color); font-size: 0.8rem; }
-
-        /* --- 项目卡片 --- */
-        .project-category { margin-bottom: 6rem; }
         
-        .category-header {
+        .hero h1 span.highlight {
+            color: var(--acid-green);
+            -webkit-text-stroke: 0;
+            text-shadow: 0 0 20px rgba(204, 255, 0, 0.5);
+        }
+
+        .hero-tags {
+            margin-top: 2rem;
+            font-family: var(--font-code);
+            color: var(--cyber-blue);
+            display: flex;
+            gap: 2rem;
+            font-size: 1.2rem;
+        }
+
+        /* --- 滚动跑马灯 (Marquee) --- */
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            background: var(--acid-green);
+            color: #000;
+            padding: 15px 0;
+            border-top: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            transform: rotate(-1deg) scale(1.05); /* 稍微倾斜增加动态感 */
+            margin: 4rem 0;
+        }
+        .marquee-content {
+            display: flex;
+            gap: 2rem;
+            animation: scroll 20s linear infinite;
+            font-family: var(--font-display);
+            font-weight: bold;
             font-size: 1.5rem;
-            border-bottom: 3px solid var(--text-color);
-            display: block;
+            white-space: nowrap;
+        }
+        @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* --- Bento Grid 布局 (核心能力) --- */
+        .container { max-width: 1400px; margin: 0 auto; padding: 4rem 2rem; }
+        
+        .section-header {
+            font-family: var(--font-code);
+            color: var(--neon-pink);
             margin-bottom: 2rem;
-            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+        .section-header::before { content: ''; width: 20px; height: 2px; background: var(--neon-pink); }
 
-        .project-grid { display: grid; gap: 3rem; }
-
-        .project-card {
-            border: var(--border);
+        .bento-grid {
             display: grid;
-            grid-template-columns: 200px 1fr;
-            background: var(--bg-color);
-            transition: 0.3s;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(2, minmax(250px, auto));
+            gap: 20px;
         }
 
-        .project-card:hover {
-            border-color: var(--accent-color);
-        }
-
-        .card-meta {
-            background: var(--text-color);
-            color: var(--bg-color);
+        .bento-item {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
             padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s;
+        }
+        .bento-item:hover {
+            border-color: var(--acid-green);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        
+        /* 跨列控制 */
+        .col-span-2 { grid-column: span 2; }
+        .row-span-2 { grid-row: span 2; }
+
+        .bento-item h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .bento-item p, .bento-item ul { font-family: var(--font-code); font-size: 0.9rem; color: #888; }
+        .bento-item:hover h3 { color: var(--acid-green); }
+
+        /* 数字统计装饰 */
+        .stat-number {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--surface-color);
+            -webkit-text-stroke: 1px var(--border-color);
+            position: absolute;
+            bottom: -10px;
+            right: 10px;
+            opacity: 0.5;
+        }
+
+        /* --- 项目列表 (赛博列表风格) --- */
+        .project-list {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            text-align: right;
-            border-right: var(--border);
+            border-top: 1px solid var(--border-color);
         }
 
-        .card-content { padding: 2rem; }
-
-        .card-content h3 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--text-color);
-            background: linear-gradient(120deg, transparent 0%, transparent 100%);
-            background-repeat: no-repeat;
-            background-size: 100% 40%;
-            background-position: 0 85%;
-            transition: background-size 0.3s;
+        .project-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.3s;
+            position: relative;
+        }
+        .project-row:hover {
+            background: #111;
+        }
+        .project-row:hover h3 {
+            color: var(--cyber-blue);
+            padding-left: 20px;
         }
         
-        .project-card:hover h3 {
-            color: var(--accent-color);
+        .project-row h3 {
+            font-size: 2rem;
+            font-family: var(--font-display);
+            transition: 0.3s;
         }
-
-        .tags span {
-            display: inline-block;
-            background: var(--accent-color);
-            color: #fff;
-            padding: 2px 8px;
+        .project-tags span {
+            border: 1px solid var(--text-primary);
+            border-radius: 50px;
+            padding: 5px 15px;
             font-size: 0.8rem;
             margin-right: 5px;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        
-        /* Dark Mode 下 Tag 样式微调 */
-        body.dark-mode .tags span { color: #000; }
-
-        /* --- Footer --- */
-        footer {
-            border-top: var(--border);
-            padding: 4rem 2rem;
-            text-align: center;
-            background: var(--box-bg);
-        }
-        
-        .contact-btn {
-            background: var(--text-color);
-            color: var(--bg-color);
-            padding: 1rem 3rem;
-            font-weight: bold;
-            font-size: 1.5rem;
-            border: none;
             display: inline-block;
-            margin-top: 2rem;
-            cursor: pointer;
         }
-        .contact-btn:hover {
-            background: var(--accent-color);
-            color: #fff;
+        
+        .arrow-link {
+            justify-self: end;
+            font-size: 2rem;
+            transform: rotate(-45deg);
+            transition: 0.3s;
+            color: var(--acid-green);
         }
+        .project-row:hover .arrow-link { transform: rotate(0); color: var(--neon-pink); }
 
-        /* 移动端适配 */
-        @media (max-width: 768px) {
-            .project-card { grid-template-columns: 1fr; }
-            .card-meta { text-align: left; flex-direction: row; gap: 1rem; border-right: none; border-bottom: var(--border); }
-            .control-panel { top: auto; bottom: 20px; right: 20px; } /* 移动端放底部方便点击 */
+        /* --- 终端风格 Footer --- */
+        footer {
+            background: #000;
+            padding: 5rem 2rem;
+            font-family: var(--font-code);
+            border-top: 1px solid var(--acid-green);
+            margin-top: 5rem;
+        }
+        .terminal-input {
+            font-size: 2rem;
+            color: var(--acid-green);
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 80%;
+            caret-color: var(--neon-pink);
+        }
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        /* --- 响应式 --- */
+        @media (max-width: 1024px) {
+            .bento-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+            .col-span-2, .row-span-2 { grid-column: span 1; grid-row: span 1; }
+            .project-row { grid-template-columns: 1fr; gap: 1rem; }
+            .hero h1 { font-size: 12vw; }
+            .arrow-link { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 控制台 -->
-    <div class="control-panel">
-        <button class="btn-toggle" onclick="toggleLanguage()" id="langBtn">CN / EN</button>
-        <button class="btn-toggle" onclick="toggleTheme()" id="themeBtn">☾ / ☀</button>
-    </div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-outline" id="cursor-outline"></div>
+    
+    <div class="noise-overlay"></div>
 
-    <!-- Header Section -->
-    <header class="container">
-        <div class="role-tag">
-            <span class="lang-en">FRENCH ENGINEERING SCHOOL | YEAR 3</span>
-            <span class="lang-zh">法国工程师学院 | 三年级</span>
+    <nav>
+        <div class="logo">NEXUS_PORTFOLIO v2.0</div>
+        <div class="controls">
+            <button onclick="toggleLanguage()">CN / EN</button>
         </div>
+    </nav>
+
+    <header class="hero">
+        <h1>
+            <span class="lang-en">CODE IS</span>
+            <span class="lang-zh">代码即</span>
+            <br>
+            <span class="highlight">POETRY.</span>
+        </h1>
+        <h1>
+            <span class="lang-en">MATH IS</span>
+            <span class="lang-zh">数学即</span>
+            <br>
+            <span class="highlight" style="color: var(--neon-pink); text-shadow: 0 0 20px rgba(255,0,255,0.5);">TRUTH.</span>
+        </h1>
         
-        <h1 class="glitch-text" data-text="ENGINEER.">
-            <span class="lang-en">ENGINEER.</span>
-            <span class="lang-zh">工程师.</span>
-        </h1>
-        <h1 class="glitch-text" data-text="MATHEMATICIAN.">
-            <span class="lang-en">MATHEMATICIAN.</span>
-            <span class="lang-zh">数学家.</span>
-        </h1>
-        <h1 class="glitch-text" data-text="AI DEVELOPER.">
-            <span class="lang-en">AI DEVELOPER.</span>
-            <span class="lang-zh">AI 开发者.</span>
-        </h1>
-        
-        <div class="sub-intro">
-            <p class="lang-en">Specializing in <strong>High-Energy Imaging (HTI)</strong> & <strong>Computer Vision</strong>.<br>Merging rigorous Applied Mathematics with hands-on IoT Engineering.</p>
-            <p class="lang-zh">专注于 <strong>高能图像 (HTI)</strong> 与 <strong>计算机视觉</strong>。<br>将扎实的应用数学功底与 AIoT 工程落地能力完美融合。</p>
+        <div class="hero-tags">
+            <span>[ AI ENGINEER ]</span>
+            <span>[ MATHEMATICIAN ]</span>
+            <span>[ CREATIVE CODER ]</span>
         </div>
     </header>
 
+    <div class="marquee-container">
+        <div class="marquee-content">
+            FLUID DYNAMICS /// COMPUTER VISION /// GENERATIVE AI /// EMBEDDED SYSTEMS /// BLOCKCHAIN /// NUMERICAL ANALYSIS /// 
+            FLUID DYNAMICS /// COMPUTER VISION /// GENERATIVE AI /// EMBEDDED SYSTEMS /// BLOCKCHAIN /// NUMERICAL ANALYSIS ///
+        </div>
+    </div>
+
     <main class="container">
+        <div class="section-header">
+            <span class="lang-en">01. SYSTEM CAPABILITIES</span>
+            <span class="lang-zh">01. 核心系统能力</span>
+        </div>
 
-        <!-- TECH STACK -->
-        <section>
-            <h2 class="section-title">
-                <span class="lang-en">01. CAPABILITIES</span>
-                <span class="lang-zh">01. 核心能力</span>
-            </h2>
-            <div class="tech-stack">
-                <div class="tech-box">
-                    <h3>// AI & VISION</h3>
-                    <ul>
-                        <li>PyTorch / TensorFlow</li>
-                        <li>
-                            <span class="lang-en">GANs & Diffusion Models</span>
-                            <span class="lang-zh">GANs & 扩散模型</span>
-                        </li>
-                        <li>OpenCV / Image Processing</li>
-                        <li>
-                            <span class="lang-en">Micro-expression Recog.</span>
-                            <span class="lang-zh">微表情识别 (CNN+ViT)</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="tech-box">
-                    <h3>
-                        <span class="lang-en">// MATH & SCI-COMP</span>
-                        <span class="lang-zh">// 数学 & 科学计算</span>
-                    </h3>
-                    <ul>
-                        <li>
-                            <span class="lang-en">PDEs & Fluid Dynamics</span>
-                            <span class="lang-zh">偏微分方程 & 流体力学</span>
-                        </li>
-                        <li>
-                            <span class="lang-en">Sparse Matrix Decomposition</span>
-                            <span class="lang-zh">稀疏矩阵分解</span>
-                        </li>
-                        <li>
-                            <span class="lang-en">Numerical Analysis</span>
-                            <span class="lang-zh">数值分析优化</span>
-                        </li>
-                        <li>MATLAB / R</li>
-                    </ul>
-                </div>
-                <div class="tech-box">
-                    <h3>
-                        <span class="lang-en">// ENGINEERING & IOT</span>
-                        <span class="lang-zh">// 工程 & 物联网</span>
-                    </h3>
-                    <ul>
-                        <li>Raspberry Pi / Embedded</li>
-                        <li>Blockchain (Solidity)</li>
-                        <li>C++ / Python</li>
-                        <li>Docker / MQTT / Data</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- PROJECTS -->
-        <section>
-            <h2 class="section-title">
-                <span class="lang-en">02. SELECTED WORKS</span>
-                <span class="lang-zh">02. 精选项目</span>
-            </h2>
-
-            <!-- Domain 1 -->
-            <div class="project-category">
-                <div class="category-header">
-                    <span class="lang-en">DOMAIN: SCIENTIFIC COMPUTING</span>
-                    <span class="lang-zh">领域：科学计算与数值模拟</span>
-                </div>
-                
-                <div class="project-grid">
-                    <!-- Project A -->
-                    <article class="project-card">
-                        <div class="card-meta">
-                            <span class="lang-en">PKU BIG DATA INST.</span>
-                            <span class="lang-zh">北大重庆大数据研究院</span>
-                            <br><br>
-                            <span>MATLAB / PDE</span>
-                        </div>
-                        <div class="card-content">
-                            <h3>
-                                <span class="lang-en">Viscous Boundary Layer Calculation</span>
-                                <span class="lang-zh">黏性边界层流体力学计算与优化</span>
-                            </h3>
-                            <p class="lang-en">Coupled inviscid and viscous fluid flow models. Implemented an Augmented Lagrangian optimization framework to solve dual problems for boundary layer design parameters.</p>
-                            <p class="lang-zh">构建粘性层–非粘性层耦合系统。基于增广拉格朗日乘子法建立优化模型，求解边界层设计参数的对偶问题。</p>
-                            <br>
-                            <div class="tags">
-                                <span>#FluidDynamics</span><span>#Optimization</span><span>#ScientificComputing</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Project B -->
-                    <article class="project-card">
-                        <div class="card-meta">
-                            <span class="lang-en">RESEARCH</span>
-                            <span class="lang-zh">科研项目</span>
-                            <br><br>
-                            <span>ALGORITHM</span>
-                        </div>
-                        <div class="card-content">
-                            <h3>
-                                <span class="lang-en">Sparse Matrix LU Decomposition</span>
-                                <span class="lang-zh">非对称稀疏矩阵 LU 分解</span>
-                            </h3>
-                            <p class="lang-en">Developed algorithms for Asymmetric Sparse Matrix decomposition. Constructed Elimination Trees and implemented Symbolic Factorization to optimize solver performance.</p>
-                            <p class="lang-zh">研究并实现非对称稀疏矩阵的消去树构建与符号分解算法，优化求解器结构，提升数值计算效率。</p>
-                            <br>
-                            <div class="tags">
-                                <span>#LinearAlgebra</span><span>#HPC</span><span>#C++</span>
-                            </div>
-                        </div>
-                    </article>
-                </div>
+        <div class="bento-grid">
+            <div class="bento-item col-span-2 row-span-2 hover-target">
+                <div class="stat-number">01</div>
+                <h3>
+                    <span class="lang-en">ARTIFICIAL INTELLIGENCE</span>
+                    <span class="lang-zh">人工智能与视觉</span>
+                </h3>
+                <p class="lang-en">Specialized in Computer Vision & Generative Models.</p>
+                <p class="lang-zh">专注于计算机视觉与生成式模型。</p>
+                <br>
+                <ul style="color: var(--acid-green);">
+                    <li>> PyTorch / TensorFlow</li>
+                    <li>> Diffusion Models & GANs</li>
+                    <li>> Vision Transformers (ViT)</li>
+                </ul>
+                <br>
+                <div style="width: 100%; height: 100px; background: repeating-linear-gradient(45deg, #222, #222 10px, #333 10px, #333 20px);"></div>
             </div>
 
-            <!-- Domain 2 -->
-            <div class="project-category">
-                <div class="category-header">
-                    <span class="lang-en">DOMAIN: COMPUTER VISION</span>
-                    <span class="lang-zh">领域：计算机视觉与 AI</span>
-                </div>
-                
-                <div class="project-grid">
-                    <!-- Project C -->
-                    <article class="project-card">
-                        <div class="card-meta">
-                            <span class="lang-en">DEEP LEARNING</span>
-                            <span class="lang-zh">深度学习</span>
-                            <br><br>
-                            <span>PyTorch</span>
-                        </div>
-                        <div class="card-content">
-                            <h3>
-                                <span class="lang-en">Micro-Expression Recognition</span>
-                                <span class="lang-zh">基于深度学习的微表情识别</span>
-                            </h3>
-                            <p class="lang-en">Implemented a CNN + ViT (Vision Transformer) hybrid structure on the SAMM dataset. Utilized Feature Perceived Dynamics (FPD) to capture subtle facial muscle movements.</p>
-                            <p class="lang-zh">复现 SAMM 数据集上的 SOTA 方法。使用 CNN + ViT 混合架构，结合 FPD（特征感知动力学）捕捉面部极细微的肌肉变化。</p>
-                            <br>
-                            <div class="tags">
-                                <span>#Transformer</span><span>#AffectiveComputing</span><span>#Research</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Project D -->
-                    <article class="project-card">
-                        <div class="card-meta">
-                            <span class="lang-en">GENERATIVE AI</span>
-                            <span class="lang-zh">生成式 AI</span>
-                            <br><br>
-                            <span>GAN / DIFFUSION</span>
-                        </div>
-                        <div class="card-content">
-                            <h3>
-                                <span class="lang-en">Generative Models & Denoising</span>
-                                <span class="lang-zh">生成对抗网络与扩散模型</span>
-                            </h3>
-                            <p class="lang-en">Designed GANs for image denoising on MNIST/CelebA. Also implemented Diffusion models for high-fidelity image generation, analyzing sampling processes.</p>
-                            <p class="lang-zh">设计 GAN 模型用于图像去噪（MNIST/CelebA）。实现 Diffusion Model 进行图像生成，深入研究采样与生成原理。</p>
-                            <br>
-                            <div class="tags">
-                                <span>#GenAI</span><span>#ComputerVision</span><span>#Restoration</span>
-                            </div>
-                        </div>
-                    </article>
-                </div>
+            <div class="bento-item hover-target">
+                <div class="stat-number">02</div>
+                <h3>MATH</h3>
+                <p class="lang-en">PDEs & Numerical Optimization.</p>
+                <p class="lang-zh">偏微分方程 & 数值优化。</p>
             </div>
 
-            <!-- Domain 3 -->
-            <div class="project-category">
-                <div class="category-header">
-                    <span class="lang-en">DOMAIN: ENGINEERING & IOT</span>
-                    <span class="lang-zh">领域：工程落地与区块链</span>
-                </div>
-                
-                <div class="project-grid">
-                    <!-- Project E -->
-                    <article class="project-card">
-                        <div class="card-meta">
-                            <span class="lang-en">HARDWARE + AI</span>
-                            <span class="lang-zh">智能硬件</span>
-                            <br><br>
-                            <span>Raspberry Pi</span>
-                        </div>
-                        <div class="card-content">
-                            <h3>
-                                <span class="lang-en">AI Smart Lock System</span>
-                                <span class="lang-zh">端到端人脸识别智能锁</span>
-                            </h3>
-                            <p class="lang-en">Deployed MTCNN face detection and FaceNet recognition algorithms directly on Raspberry Pi hardware for real-time security control.</p>
-                            <p class="lang-zh">将 MTCNN + FaceNet 算法成功部署于树莓派。实现从人脸检测、对齐到识别开锁的完整嵌入式系统。</p>
-                            <br>
-                            <div class="tags">
-                                <span>#EmbeddedAI</span><span>#EdgeComputing</span><span>#Python</span>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Project F -->
-                    <article class="project-card">
-                        <div class="card-meta">
-                            <span class="lang-en">BLOCKCHAIN</span>
-                            <span class="lang-zh">区块链</span>
-                            <br><br>
-                            <span>Solidity</span>
-                        </div>
-                        <div class="card-content">
-                            <h3>
-                                <span class="lang-en">Medical Data Protection</span>
-                                <span class="lang-zh">基于区块链的医疗数据保护</span>
-                            </h3>
-                            <p class="lang-en">Created Smart Contracts for permissioned access to medical records. Deployed on Ethereum Sepolia Testnet using MetaMask.</p>
-                            <p class="lang-zh">编写智能合约实现医疗数据权限管理。使用 MetaMask 连接 Ethereum 测试网，实现去中心化的数据访问鉴权。</p>
-                            <br>
-                            <div class="tags">
-                                <span>#Web3</span><span>#Security</span><span>#SmartContracts</span>
-                            </div>
-                        </div>
-                    </article>
-                </div>
+            <div class="bento-item hover-target">
+                <div class="stat-number">03</div>
+                <h3>IoT</h3>
+                <p class="lang-en">Raspberry Pi & Edge Computing.</p>
+                <p class="lang-zh">树莓派 & 边缘计算。</p>
             </div>
 
-        </section>
+            <div class="bento-item col-span-2 hover-target" style="border-color: var(--cyber-blue);">
+                <div class="stat-number">04</div>
+                <h3>
+                    <span class="lang-en">FULL STACK ARSENAL</span>
+                    <span class="lang-zh">全栈武器库</span>
+                </h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <span style="background:#fff; color:#000; padding:2px 8px;">Python</span>
+                    <span style="border:1px solid #fff; padding:2px 8px;">C++</span>
+                    <span style="border:1px solid #fff; padding:2px 8px;">MATLAB</span>
+                    <span style="border:1px solid #fff; padding:2px 8px;">Solidity</span>
+                    <span style="border:1px solid #fff; padding:2px 8px;">Docker</span>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <!-- Footer -->
+    <section class="container">
+        <div class="section-header">
+            <span class="lang-en">02. DEPLOYED PROTOCOLS</span>
+            <span class="lang-zh">02. 已部署协议 (项目)</span>
+        </div>
+
+        <div class="project-list">
+            
+            <a href="#" class="project-row hover-target">
+                <div style="font-family: var(--font-code); color: #555;">PRJ_001</div>
+                <div>
+                    <h3>
+                        <span class="lang-en">Viscous Boundary Layer</span>
+                        <span class="lang-zh">黏性边界层计算</span>
+                    </h3>
+                    <div class="project-tags" style="margin-top: 1rem;">
+                        <span class="lang-en">Fluid Dynamics</span><span class="lang-zh">流体力学</span>
+                        <span>MATLAB</span>
+                        <span>Optimization</span>
+                    </div>
+                </div>
+                <div class="arrow-link">→</div>
+            </a>
+
+            <a href="#" class="project-row hover-target">
+                <div style="font-family: var(--font-code); color: #555;">PRJ_002</div>
+                <div>
+                    <h3>
+                        <span class="lang-en">Micro-Expression Recog.</span>
+                        <span class="lang-zh">微表情识别系统</span>
+                    </h3>
+                    <div class="project-tags" style="margin-top: 1rem;">
+                        <span>CNN + ViT</span>
+                        <span>PyTorch</span>
+                        <span>Affective Comp.</span>
+                    </div>
+                </div>
+                <div class="arrow-link">→</div>
+            </a>
+
+            <a href="#" class="project-row hover-target">
+                <div style="font-family: var(--font-code); color: #555;">PRJ_003</div>
+                <div>
+                    <h3>
+                        <span class="lang-en">Edge AI Smart Lock</span>
+                        <span class="lang-zh">边缘 AI 智能锁</span>
+                    </h3>
+                    <div class="project-tags" style="margin-top: 1rem;">
+                        <span>Raspberry Pi</span>
+                        <span>FaceNet</span>
+                        <span>Hardware</span>
+                    </div>
+                </div>
+                <div class="arrow-link">→</div>
+            </a>
+
+            <a href="#" class="project-row hover-target">
+                <div style="font-family: var(--font-code); color: #555;">PRJ_004</div>
+                <div>
+                    <h3>
+                        <span class="lang-en">Blockchain Med-Data</span>
+                        <span class="lang-zh">区块链医疗数据保护</span>
+                    </h3>
+                    <div class="project-tags" style="margin-top: 1rem;">
+                        <span>Solidity</span>
+                        <span>Ethereum</span>
+                        <span>Web3</span>
+                    </div>
+                </div>
+                <div class="arrow-link">→</div>
+            </a>
+
+        </div>
+    </section>
+
     <footer>
-        <h2 style="font-size: 2rem; margin-bottom: 1rem;">
-            <span class="lang-en">READY TO COLLABORATE?</span>
-            <span class="lang-zh">期待与您合作</span>
-        </h2>
-        <p class="lang-en">Looking for Internships in Computer Vision / Scientific Computing / AI Engineering</p>
-        <p class="lang-zh">求职意向：计算机视觉算法 / 科学计算 / AI 工程方向实习</p>
-        <a href="mailto:your.email@example.com" class="contact-btn">
-            <span class="lang-en">CONTACT ME</span>
-            <span class="lang-zh">联系我</span>
-        </a>
+        <div class="container">
+            <p style="color: #666; margin-bottom: 10px;">root@portfolio:~/contact $ <span class="blink">_</span></p>
+            
+            <h2 style="font-size: 3rem; color: var(--text-primary); margin-bottom: 2rem;">
+                <span class="lang-en">LET'S BUILD THE FUTURE.</span>
+                <span class="lang-zh">共建未来。</span>
+            </h2>
+
+            <div style="border-left: 2px solid var(--neon-pink); padding-left: 20px;">
+                <p class="lang-en">Open for internships in Computer Vision & Scientific Computing.</p>
+                <p class="lang-zh">寻求计算机视觉与科学计算方向的实习机会。</p>
+                <br>
+                <a href="mailto:email@example.com" class="hover-target" style="font-size: 1.5rem; color: var(--acid-green); text-decoration: underline;">
+                    > SEND_TRANSMISSION()
+                </a>
+            </div>
+        </div>
     </footer>
 
     <script>
-        // --- 逻辑脚本 ---
-
-        // 1. 切换语言
+        // --- 1. 语言切换逻辑 ---
         function toggleLanguage() {
-            const body = document.body;
-            body.classList.toggle('zh-mode');
-            
-            // 保存状态
-            const isZh = body.classList.contains('zh-mode');
-            localStorage.setItem('lang', isZh ? 'zh' : 'en');
+            document.body.classList.toggle('zh-mode');
         }
 
-        // 2. 切换夜间/日间模式
-        function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle('dark-mode');
-            
-            // 保存状态
-            const isDark = body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        }
+        // --- 2. 自定义光标逻辑 ---
+        const cursorDot = document.getElementById('cursor-dot');
+        const cursorOutline = document.getElementById('cursor-outline');
 
-        // 3. 初始化 (加载保存的状态)
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            // 点是实时的
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            // 圆圈带一点延迟动画
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // 悬停效果
+        const hoverTargets = document.querySelectorAll('.hover-target, button, a');
+        hoverTargets.forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+        });
+
+        // --- 3. 页面加载简单的入场动画 ---
         window.onload = () => {
-            const savedLang = localStorage.getItem('lang');
-            const savedTheme = localStorage.getItem('theme');
-
-            if (savedLang === 'zh') {
-                document.body.classList.add('zh-mode');
-            }
-
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-            }
-        };
-
-        // 4. 简单的淡入动画
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = 1;
-                    entry.target.style.transform = "translateY(0)";
-                }
+            const items = document.querySelectorAll('.bento-item, .project-row');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, 100 * index);
             });
-        });
-
-        document.querySelectorAll('.project-card, .tech-box').forEach((el) => {
-            el.style.opacity = 0;
-            el.style.transform = "translateY(20px)";
-            el.style.transition = "all 0.6s ease-out, border-color 0.3s, box-shadow 0.3s"; // 保持过渡平滑
-            observer.observe(el);
-        });
+        };
     </script>
 </body>
 </html>
